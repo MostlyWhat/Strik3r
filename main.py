@@ -19,15 +19,22 @@ except FileNotFoundError:
 # On Ready Event
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name='!help'))
     print(f'Logged in as {client.user.name}')
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name = 'with SkyNET'))
     
 # Member Join Event
 @client.event
 async def on_member_join(member):
     print(f'{member} has joined the server.')
+    
+    # Embed
+    embed = discord.Embed(title='Welcome to MostlyWhat Systems!', description='Please read the embed below for somethings to help you get started!', color=0x00ff00)
+    embed.add_field(name='What is MostlyWhat Systems?', value='MostlyWhat Systems is a Discord bot that is designed to help you with your Minecraft server!', inline=False)
+    embed.add_field(name='How do I use it?', value='You can use the commands !help and !commands to see what commands are available!', inline=False)
+    embed.add_field(name='What is a command?', value='A command is a command that you can use in Discord!', inline=False)
+    
     await member.create_dm()
-    await member.dm_channel.send(f'Hi {member.name}, I personally welcome you to MostlyWhat Systems! Please read the embed below for somethings to help you get started!')
+    await member.dm_channel.send(f'Hi {member.name}, I personally welcome you to MostlyWhat Systems! Please read the embed below for somethings to help you get started!', embed=embed)
     
 # Member Leave Event
 @client.event
@@ -47,6 +54,7 @@ async def on_command_error(ctx, error):
     
 # Purge Command with input of number of messages to delete
 @client.command()
+@commands.has_permissions(manage_messages=True)
 async def purge(ctx, amount: int):
     await ctx.channel.purge(limit=amount)
     await ctx.send(f'Deleted {amount} messages.')
@@ -59,18 +67,21 @@ async def purge_error(ctx, error):
 
 # Kick Command
 @client.command()
+@commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
     await ctx.send(f'Kicked {member.name} for {reason}')
     
 # Ban Command
 @client.command()
+@commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason=None):
     await member.ban(reason=reason)
     await ctx.send(f'Banned {member.name} for {reason}')
 
 # Unban Command
 @client.command()
+@commands.has_permissions(ban_members=True)
 async def unban(ctx, *, member):
     banned_users = await ctx.guild.bans()
     member_name, member_discriminator = member.split('#')
