@@ -7,20 +7,28 @@ from discord.ext import commands, tasks
 intents = discord.Intents().all()
 client = commands.Bot(command_prefix='!', intents=intents)
 
-# Get Token
-try:
-    with open('token.txt', 'r') as f:
-        token = f.read()
-        
-except FileNotFoundError:
-    print('Token not found. Please create a token.txt file with your token in it.')
+# Setup the Variables
+# Setup Presence
+if 'STRIK3R_TOKEN' in os.environ:
+    presence = os.environ.get('STRIK3R_TOKEN')
+    
+else:
+    print("Presence not set. Defaulting to 'with SkyNET'")
+    exit()
+
+# Setup the Bot
+if 'STRIK3R_TOKEN' in os.environ:
+    token = os.environ.get('STRIK3R_TOKEN')
+    
+else:
+    print('Token not found in environment variables. Please put your token in the STRIK3R_TOKEN environment variable.')
     exit()
 
 # On Ready Event
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user.name}')
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name = 'with SkyNET'))
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name=presence))
     
 # Member Join Event
 @client.event
