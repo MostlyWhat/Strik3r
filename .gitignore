@@ -1,3 +1,8 @@
+# Strik3r's Ignore
+config/credentials.json
+token.txt
+
+# GitHub Python Exception
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -9,6 +14,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+strik3r-env/
 develop-eggs/
 dist/
 downloads/
