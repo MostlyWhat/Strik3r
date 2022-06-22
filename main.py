@@ -10,7 +10,8 @@ client = commands.Bot(command_prefix='!', intents=intents)
 # Setup the Variables
 # Setup Presence
 if 'STRIK3R_TOKEN' in os.environ:
-    presence = os.environ.get('STRIK3R_TOKEN')
+    presence = os.environ.get('STRIK3R_STATUS', 'with SkyNET')
+    print('Presence has been set using environmental variable.')
     
 else:
     print("Presence not set. Defaulting to 'with SkyNET'")
@@ -19,6 +20,7 @@ else:
 # Setup the Bot
 if 'STRIK3R_TOKEN' in os.environ:
     token = os.environ.get('STRIK3R_TOKEN')
+    print('Token has been set using environmental variable')
     
 else:
     print('Token not found in environment variables. Please put your token in the STRIK3R_TOKEN environment variable.')
