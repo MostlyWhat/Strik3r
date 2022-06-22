@@ -9,7 +9,7 @@ client = commands.Bot(command_prefix='!', intents=intents)
 
 # Setup the Variables
 # Setup Presence
-if 'STRIK3R_TOKEN' in os.environ:
+if 'STRIK3R_TOKEN' in os.environ != None:
     presence = os.environ.get('STRIK3R_STATUS')
     print('Presence has been set using environmental variable.')
     
