@@ -1,9 +1,13 @@
+import asyncio
+
 import discord
 import youtube_dl
 from discord.ext import commands
 
 # Options
-players = {}
+YDL_OPTIONS = {
+    'format': 'bestaudio'
+}
 
 class music(commands.Cog):
     def __init__(self, client):
@@ -27,16 +31,27 @@ class music(commands.Cog):
         """Plays audio from youtube."""
 
         try:
-            guild = ctx.message.guild
-            voice_client = guild.voice_client
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, lambda: youtube_dl.YoutubeDL(YDL_OPTIONS).extract_info(query, download=False))
             
-            player = await voice_client.create_ytdl_player(query)
-            players[guild.id] = player
-            player.start()
+            song = data['formats'][0]
+            player = discord.FFmpegPCMAudio(song['url'])
             
+            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            
+            await ctx.send('Now playing: {}'.format(data['title']))
+        
         except Exception as e:
             print(e)
             await ctx.send(f'Error: {e}')
+
+    @commands.command()
+    async def pause(self, ctx):
+        """Pauses the current song."""
+
+        if ctx.voice_client and ctx.voice_client.is_playing():
+            ctx.voice_client.pause()
+            await ctx.send('Current Song has been Paused')
 
     @commands.command()
     async def stop(self, ctx):
@@ -49,6 +64,7 @@ class music(commands.Cog):
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
+                
             else:
                 await ctx.send("You are not connected to a voice channel.")
                 raise commands.CommandError("Author not connected to a voice channel.")
