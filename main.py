@@ -9,15 +9,7 @@ client = commands.Bot(command_prefix='!', intents=intents)
 
 # Setup the Variables
 # Setup Presence
-if 'STRIK3R_STATUS' in os.environ:
-    presence = os.environ.get('STRIK3R_STATUS')
-    
-    if presence is not None:
-        print('Presence has been set using environmental variable.')
-    
-    else:
-        presence = 'with SkyNET'
-        print("Presence not set. Defaulting to 'with SkyNET'")
+presence = 'with SkyNET'
 
 # Setup the Bot
 if 'STRIK3R_TOKEN' in os.environ:
