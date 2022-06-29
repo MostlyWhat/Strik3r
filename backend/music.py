@@ -12,10 +12,6 @@ YDL_OPTIONS = {
 class music(commands.Cog):
     def __init__(self, client):
         self.client = client
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('Music is ready.')
         
     @commands.command()
     async def join(self, ctx, *, channel: discord.VoiceChannel):
