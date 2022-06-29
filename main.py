@@ -28,6 +28,28 @@ else:
     print('Token not found in environment variables. Please put your token in the STRIK3R_TOKEN environment variable.')
     exit()
 
+# Stuff
+@client.command()
+async def load(ctx, extension):
+    client.load_extension(f'backend.{extension}')
+    
+# Unload
+@client.command()
+async def unload(ctx, extension):
+    client.unload_extension(f'backend.{extension}')
+    
+# Reload
+@client.command()
+async def reload(ctx, extension):
+    client.unload_extension(f'backend.{extension}')
+    client.load_extension(f'backend.{extension}')
+
+# Load All Extensions
+for filename in os.listdir('./backend'):
+    if filename.endswith('.py'):
+        client.load_extension(f'backend.{filename[:-3]}')
+        
+
 # On Ready Event
 @client.event
 async def on_ready():
@@ -105,11 +127,5 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f'Unbanned {user.name}')
             return
-        
-# Check Hours Left on Heroku
-@client.command()
-async def checktime(ctx):
-    heroku_time = os.system('heroku ps -a strik3r | grep -i uptime')
-    await ctx.send(f'{heroku_time}')
 
 client.run(token)
