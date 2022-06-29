@@ -35,11 +35,11 @@ class music(commands.Cog):
             data = await loop.run_in_executor(None, lambda: youtube_dl.YoutubeDL(YDL_OPTIONS).extract_info(query, download=False))
             
             song = data['formats'][0]
-            player = discord.FFmpegPCMAudio(song['url'])
+            player = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(song['url']))
             
-            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            ctx.voice_client.play(player)
             
-            await ctx.send('Now playing: {}'.format(data['title']))
+            await ctx.send('Now playing: {}'.format(song['title']))
         
         except Exception as e:
             print(e)
