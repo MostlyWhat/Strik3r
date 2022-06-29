@@ -45,5 +45,5 @@ class Music(commands.Cog):
         elif ctx.voice_client.is_playing():
             ctx.voice_client.stop()
 
-def setup():
+def setup(client):
     client.add_cog(Music(client))
