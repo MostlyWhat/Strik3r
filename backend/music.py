@@ -1,14 +1,9 @@
-import asyncio
-
 import discord
 import youtube_dl
 from discord.ext import commands
 
 # Options
-voice_clients = {}
-youtube_dl_options = {'format': 'bestaudio/best'}
-ytdl = youtube_dl.YoutubeDL(youtube_dl_options)
-ffmpeg_options = {'options': '-vn'}
+players = {}
 
 class music(commands.Cog):
     def __init__(self, client):
@@ -32,16 +27,12 @@ class music(commands.Cog):
         """Plays audio from youtube."""
 
         try:
-            voice_client = await ctx.voice_client.move_to(ctx.author.voice.channel)
-            voice_clients[ctx.guild.id] = voice_client
+            guild = ctx.message.guild
+            voice_client = guild.voice_client
             
-            loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None, lambda: ytdl.extract_info(query, download=False))
-            
-            song = data['formats'][0]['url']
-            player = discord.FFmpegPCMAudio(song, **ffmpeg_options)
-            
-            voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            player = await voice_client.create_ytdl_player(query)
+            players[guild.id] = player
+            player.start()
             
         except Exception as e:
             print(e)
