@@ -1,15 +1,23 @@
+import asyncio
+
 import discord
+import youtube_dl
 from discord.ext import commands
 
+# Options
+voice_clients = {}
+youtube_dl_options = {'format': 'bestaudio/best'}
+ytdl = youtube_dl.YoutubeDL(youtube_dl_options)
+ffmpeg_options = {'options': '-vn'}
 
-class Music(commands.Cog):
+class music(commands.Cog):
     def __init__(self, client):
         self.client = client
 
     @commands.Cog.listener()
     async def on_ready(self):
         print('Music is ready.')
-
+        
     @commands.command()
     async def join(self, ctx, *, channel: discord.VoiceChannel):
         """Joins a voice channel."""
@@ -21,12 +29,23 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, query):
-        """Plays a file from the local filesystem."""
+        """Plays audio from youtube."""
 
-        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
-        ctx.voice_client.play(source, after=lambda e: print(f'Player error: {e}') if e else None)
-
-        await ctx.send(f'Now playing: {query}')
+        try:
+            voice_client = await ctx.voice_client.move_to(ctx.author.voice.channel)
+            voice_clients[ctx.guild.id] = voice_client
+            
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, lambda: ytdl.extract_info(query, download=False))
+            
+            song = data['formats'][0]['url']
+            player = discord.FFmpegPCMAudio(song, **ffmpeg_options)
+            
+            voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            
+        except Exception as e:
+            print(e)
+            await ctx.send(f'Error: {e}')
 
     @commands.command()
     async def stop(self, ctx):
@@ -42,8 +61,9 @@ class Music(commands.Cog):
             else:
                 await ctx.send("You are not connected to a voice channel.")
                 raise commands.CommandError("Author not connected to a voice channel.")
+            
         elif ctx.voice_client.is_playing():
             ctx.voice_client.stop()
 
 def setup(client):
-    client.add_cog(Music(client))
+    client.add_cog(music(client))
