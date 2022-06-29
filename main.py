@@ -57,7 +57,7 @@ async def on_member_join(member):
     embed = discord.Embed(title='Welcome to MostlyWhat Systems!', description='Please read the embed below for somethings to help you get started!', color=0x00ff00)
     embed.add_field(name='What is MostlyWhat Systems?', value='MostlyWhat Systems is a Discord bot that is designed to help you with your Minecraft server!', inline=False)
     embed.add_field(name='How do I use it?', value='You can use the commands !help and !commands to see what commands are available!', inline=False)
-    embed.add_field(name='What is a command?', value='A command is a command that you can use in Discord!', inline=False)
+    embed.add_field(name='What is a command?', value='A command is a command that you can use in Discord!E', inline=False)
     
     await member.create_dm()
     await member.dm_channel.send(f'Hi {member.name}, I personally welcome you to MostlyWhat Systems! Please read the embed below for somethings to help you get started!', embed=embed)
