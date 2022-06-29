@@ -9,7 +9,7 @@ client = commands.Bot(command_prefix='!', intents=intents)
 
 # Setup the Variables
 # Setup Presence
-if 'STRIK3R_TOKEN' in os.environ:
+if 'STRIK3R_STATUS' in os.environ:
     presence = os.environ.get('STRIK3R_STATUS')
     
     if presence is not None:
@@ -105,5 +105,11 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f'Unbanned {user.name}')
             return
+        
+# Check Hours Left on Heroku
+@client.command()
+async def checktime(ctx):
+    heroku_time = os.system('heroku ps -a strik3r | grep -i uptime')
+    await ctx.send(f'{heroku_time}')
 
 client.run(token)
