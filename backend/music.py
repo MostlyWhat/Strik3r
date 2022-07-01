@@ -87,12 +87,11 @@ class music(commands.Cog):
     async def stop(self, ctx):
         """Stops and disconnects the bot from voice."""
 
-        ctx.voice_client.disconnect()
-
         # Current Song Embed
         embed = discord.Embed(title='[ Music ] Disconnected from Voice Channel', color=0x00ff00)
+        ctx.send(embed=embed)
         
-        await ctx.send(embed=embed)
+        await ctx.voice_client.disconnect()
 
     @play.before_invoke
     async def ensure_voice(self, ctx):
