@@ -1,6 +1,8 @@
 import contextlib
 import os
 
+from web_server import keep_alive
+
 import discord
 from discord.ext import commands, tasks
 
@@ -92,4 +94,5 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Command not found. Please use !help for a list of commands.')
 
+keep_alive()
 client.run(token)
