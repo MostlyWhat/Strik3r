@@ -1,4 +1,0 @@
-discord.py
-discord.py[voice]
-flask
-youtube_dl
