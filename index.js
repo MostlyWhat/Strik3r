@@ -1,10 +1,10 @@
 
 // const { clientId, guildId, token, publicKey } = require('./config.json');
 require('dotenv').config()
-const APPLICATION_ID = process.env.APPLICATION_ID 
-const TOKEN = process.env.TOKEN 
+const STRIK3R_ID = process.env.STRIK3R_ID
+const STRIK3R_TOKEN = process.env.STRIK3R_TOKEN 
 const PUBLIC_KEY = process.env.PUBLIC_KEY || 'not set'
-const GUILD_ID = process.env.GUILD_ID 
+const SERVER_ID = process.env.SERVER_ID 
 
 
 const axios = require('axios')
@@ -22,7 +22,7 @@ const discord_api = axios.create({
 	"Access-Control-Allow-Origin": "*",
 	"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
 	"Access-Control-Allow-Headers": "Authorization",
-	"Authorization": `Bot ${TOKEN}`
+	"Authorization": `Bot ${STRIK3R_TOKEN}`
   }
 });
 
@@ -89,7 +89,7 @@ app.get('/register_commands', async (req,res) =>{
   {
     // api docs - https://discord.com/developers/docs/interactions/application-commands#create-global-application-command
     let discord_response = await discord_api.put(
-      `/applications/${APPLICATION_ID}/guilds/${GUILD_ID}/commands`,
+      `/applications/${STRIK3R_ID}/guilds/${SERVER_ID}/commands`,
       slash_commands
     )
     console.log(discord_response.data)
@@ -103,7 +103,7 @@ app.get('/register_commands', async (req,res) =>{
 
 
 app.get('/', async (req,res) =>{
-  return res.send('Follow documentation ')
+  return res.send('Strik3r is Operating Nominally')
 })
 
 
