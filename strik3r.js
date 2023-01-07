@@ -6,7 +6,14 @@ const path = require('node:path');
 const { STRIK3R_TOKEN } = require('./config.js');
 
 // Require the necessary discord.js classes
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js');
+
+// Setup Web Server to keep the bot alive
+const http = require('http');
+http.createServer(function (req, res) {
+	res.write('I\'m alive');
+	res.end();
+}).listen(8080);
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -38,6 +45,9 @@ for (const file of commandFiles) {
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, (c) => {
 	console.log(`Strik3r logged in as ${c.user.tag}`);
+	// eslint-disable-next-line prefer-const
+	let activities = ['Inception', 'Avatar 2', 'Interstellar'], i = 0;
+	setInterval(() => client.user.setPresence({ activities: [{ name: `${activities[i++ % activities.length]}`, type: ActivityType.Watching }], status: 'online' }), 10000);
 });
 
 // When the client is ready, run this code for each interaction
@@ -65,7 +75,3 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // Log in to Discord with your client's token
 client.login(STRIK3R_TOKEN);
-
-app.get('/', async (req, res) => {
-	return res.send('Strik3r Status: Operational');
-})
