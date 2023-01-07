@@ -44,7 +44,7 @@ for (const file of commandFiles) {
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, (c) => {
-	console.log(`Strik3r logged in as ${c.user.tag}`);
+	console.log(`[ Strik3r ] Logged in as ${c.user.tag}`);
 	// eslint-disable-next-line prefer-const
 	let activities = ['Inception', 'Avatar 2', 'Interstellar'], i = 0;
 	setInterval(() => client.user.setPresence({ activities: [{ name: `${activities[i++ % activities.length]}`, type: ActivityType.Watching }], status: 'online' }), 10000);
