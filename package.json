@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon strik3r.js",
-    "start": "node strik3r.js"
+    "start": "node strik3r.js",
+    "release": "auto shipit"
   },
   "repository": {
     "type": "git",
