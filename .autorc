@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "git-tag"
+  ],
+  "owner": "MostlyWhat",
+  "repo": "Strik3r",
+  "name": "MostlyWhat",
+  "email": "mostlywhatstudios@gmail.com"
+}
