@@ -24,6 +24,7 @@
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
+    "@auto-it/git-tag": "^10.37.6",
     "auto": "^10.37.6",
     "eslint": "^8.31.0",
     "git-tag": "^0.2.0",
