@@ -1,6 +1,6 @@
-name: Release
+name: Publish Release
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   release:

@@ -1,7 +1,7 @@
 {
   "name": "@mostlywhat/strik3r",
-  "version": "1.0.0",
-  "description": "A Bot",
+  "version": "0.0.0",
+  "description": "A Discord Bot",
   "main": "strik3r.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
