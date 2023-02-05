@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: 19.x
 
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1
+
       - name: Cache node modules
         uses: actions/cache@v1
         with:

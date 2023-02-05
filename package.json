@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon strik3r.js",
     "start": "node strik3r.js",
-    "release": "auto shipit"
+    "release": "auto shipit",
+    "alpha": "auto shipit"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,8 @@
   },
   "homepage": "https://github.com/mostlywhat/strik3rt#readme",
   "dependencies": {
+    "@discordjs/rest": "^1.0.0",
+    "discord-api-types": "^0.36.2",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3"
   },
@@ -27,7 +30,6 @@
     "@auto-it/git-tag": "^10.37.6",
     "auto": "^10.37.6",
     "eslint": "^8.31.0",
-    "git-tag": "^0.2.0",
     "prettier": "^2.8.1"
   }
 }
