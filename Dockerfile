@@ -2,10 +2,7 @@
 FROM node:16
 
 # Set the working directory in the container
-WORKDIR /strik3r-app
-
-# Copy the application files into the working directory
-COPY . /strik3r-app
+WORKDIR /
 
 # Install the application dependencies
 RUN npm install
