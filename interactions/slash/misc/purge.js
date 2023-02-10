@@ -11,7 +11,6 @@ const {
 	SlashCommandBuilder,
 	PermissionFlagsBits,
 	ActionRowBuilder,
-	Events,
 	ModalBuilder,
 	TextInputBuilder,
 	TextInputStyle,
@@ -29,44 +28,53 @@ module.exports = {
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
 	async execute(interaction) {
-		if (!interaction.isChatInputCommand()) return;
+		// Create the modal
+		const modal = new ModalBuilder()
+			.setCustomId('purgeModal')
+			.setTitle('Purging Operations');
 
-		if (interaction.commandName === 'purge') {
-			// Create the modal
-			const modal = new ModalBuilder()
-				.setCustomId('myModal')
-				.setTitle('My Modal');
+		// Add components to modal
 
-			// Add components to modal
+		// Create the number of messages
+		const numberOfMessagesInput = new ActionRowBuilder().addComponents(
+			new TextInputBuilder()
+				.setCustomId('numberOfMessages')
+				.setLabel('Number of Messages')
+				.setPlaceholder('ex. 24')
+				.setMinLength(1)
+				.setMaxLength(4)
+				.setStyle(TextInputStyle.Short)
+				.setRequired(true),
+		);
 
-			// Create the text input components
-			const favoriteColorInput = new TextInputBuilder()
-				.setCustomId('favoriteColorInput')
-				// The label is the prompt the user sees for this input
-				.setLabel('What\'s your favorite color?')
-				// Short means only a single line of text
-				.setStyle(TextInputStyle.Short);
+		// Create the reason for purging
+		const reasonInput = new ActionRowBuilder().addComponents(
+			new TextInputBuilder()
+				.setCustomId('reason')
+				.setLabel('Reason')
+				.setPlaceholder('Cleanup the channel...')
+				.setMinLength(1)
+				.setMaxLength(100)
+				.setStyle(TextInputStyle.Short)
+				.setRequired(true),
+		);
 
-			const hobbiesInput = new TextInputBuilder()
-				.setCustomId('hobbiesInput')
-				.setLabel('What\'s some of your favorite hobbies?')
-				// Paragraph means multiple lines of text.
-				.setStyle(TextInputStyle.Paragraph);
+		// Create the type 'confirm' to confirm the purging
+		const confirmInput = new ActionRowBuilder().addComponents(
+			new TextInputBuilder()
+				.setCustomId('confirm')
+				.setLabel('Confirm')
+				.setPlaceholder('Type "confirm"')
+				.setMinLength(1)
+				.setMaxLength(7)
+				.setStyle(TextInputStyle.Short)
+				.setRequired(true),
+		);
 
-			// An action row only holds one text input,
-			// so you need one action row per text input.
-			const firstActionRow = new ActionRowBuilder().addComponents(
-				favoriteColorInput,
-			);
-			const secondActionRow = new ActionRowBuilder().addComponents(
-				hobbiesInput,
-			);
+		// Add the action row to the modal
+		modal.addComponents(numberOfMessagesInput, reasonInput, confirmInput);
 
-			// Add inputs to the modal
-			modal.addComponents(firstActionRow, secondActionRow);
-
-			// Show the modal to the user
-			await interaction.showModal(modal);
-		}
+		// Show the modal to the user
+		await interaction.showModal(modal);
 	},
 };
