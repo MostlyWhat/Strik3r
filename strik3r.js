@@ -1,20 +1,32 @@
-// Import Node.js modules
-const fs = require('node:fs');
-const path = require('node:path');
+/**
+ * @file Main File of the bot, responsible for registering events, commands, interactions etc.
+ * @author MostlyWhat
+ * @since 1.0.0
+ * @version 3.3.0
+ */
 
-// Import Variables from config.js
-const { STRIK3R_TOKEN } = require('./config.js');
+// Declare constants which will be used throughout the bot.
 
-// Require the necessary discord.js classes
+const fs = require('fs');
 const {
 	Client,
 	Collection,
-	Events,
 	GatewayIntentBits,
-	ActivityType,
+	Partials,
 } = require('discord.js');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 
-// Setup Web Server to keep the bot alive
+// Import Variables from config.js
+const { STRIK3R_TOKEN, STRIK3R_ID, SERVER_ID } = require('./config.js');
+const token = STRIK3R_TOKEN;
+const client_id = STRIK3R_ID;
+const test_guild_id = SERVER_ID;
+
+/**
+ * @description Launch Web Server to keep the bot alive
+ */
+
 const http = require('http');
 http
 	.createServer(function(req, res) {
@@ -23,79 +35,285 @@ http
 	})
 	.listen(8080);
 
-// Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+/**
+ * From v13, specifying the intents is compulsory.
+ * @type {import('./typings').Client}
+ * @description Main Application Client */
 
-// Create a new collection for commands
-client.commands = new Collection();
+// @ts-ignore
+const client = new Client({
+	// Please add all intents you need, more detailed information @ https://ziad87.net/intents/
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.DirectMessages,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+	],
+	partials: [Partials.Channel],
+});
 
-// Read all files in the commands directory
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs
-	.readdirSync(commandsPath)
+/** ********************************************************************/
+// Below we will be making an event handler!
+
+/**
+ * @description All event files of the event handler.
+ * @type {String[]}
+ */
+
+const eventFiles = fs
+	.readdirSync('./events')
 	.filter((file) => file.endsWith('.js'));
 
-for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file);
-	const command = require(filePath);
-	// Set a new item in the Collection with the key as the command name and the value as the exported module
-	if ('data' in command && 'execute' in command) {
-		client.commands.set(command.data.name, command);
+// Loop through all files and execute the event when it is actually emmited.
+for (const file of eventFiles) {
+	const event = require(`./events/${file}`);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args, client));
 	}
 	else {
-		console.log(
-			`[ Strik3r ] [WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+		client.on(
+			event.name,
+			async (...args) => await event.execute(...args, client),
 		);
 	}
 }
 
-// Run deploy.js to register the commands
-require('./deploy.js').deploy();
+/** ********************************************************************/
+// Define Collection of Commands, Slash Commands and cooldowns
 
-// When the client is ready, run this code (only once)
-// We use 'c' for the event parameter to keep it separate from the already defined 'client'
-client.once(Events.ClientReady, (c) => {
-	console.log(`[ Strik3r ] Logged in as ${c.user.tag}`);
-	// eslint-disable-next-line prefer-const
-	let activities = ['Inception', 'Avatar 2', 'Interstellar'],
-		i = 0;
-	setInterval(
-		() =>
-			client.user.setPresence({
-				activities: [
-					{
-						name: `${activities[i++ % activities.length]}`,
-						type: ActivityType.Watching,
-					},
-				],
-				status: 'online',
-			}),
-		600000,
-	);
-});
+client.commands = new Collection();
+client.slashCommands = new Collection();
+client.buttonCommands = new Collection();
+client.selectCommands = new Collection();
+client.contextCommands = new Collection();
+client.modalCommands = new Collection();
+client.cooldowns = new Collection();
+client.autocompleteInteractions = new Collection();
+client.triggers = new Collection();
 
-// When the client is ready, run this code for each interaction
-client.on(Events.InteractionCreate, async (interaction) => {
-	if (!interaction.isChatInputCommand()) return;
+/** ********************************************************************/
+// Registration of Message-Based Legacy Commands.
 
-	const command = interaction.client.commands.get(interaction.commandName);
+/**
+ * @type {String[]}
+ * @description All command categories aka folders.
+ */
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
+const commandFolders = fs.readdirSync('./commands');
+
+// Loop through all files and store commands in commands collection.
+
+for (const folder of commandFolders) {
+	const commandFiles = fs
+		.readdirSync(`./commands/${folder}`)
+		.filter((file) => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const command = require(`./commands/${folder}/${file}`);
+		client.commands.set(command.name, command);
 	}
+}
 
+/** ********************************************************************/
+// Registration of Slash-Command Interactions.
+
+/**
+ * @type {String[]}
+ * @description All slash commands.
+ */
+
+const slashCommands = fs.readdirSync('./interactions/slash');
+
+// Loop through all files and store slash-commands in slashCommands collection.
+
+for (const module of slashCommands) {
+	const commandFiles = fs
+		.readdirSync(`./interactions/slash/${module}`)
+		.filter((file) => file.endsWith('.js'));
+
+	for (const commandFile of commandFiles) {
+		const command = require(`./interactions/slash/${module}/${commandFile}`);
+		client.slashCommands.set(command.data.name, command);
+	}
+}
+
+/** ********************************************************************/
+// Registration of Autocomplete Interactions.
+
+/**
+ * @type {String[]}
+ * @description All autocomplete interactions.
+ */
+
+const autocompleteInteractions = fs.readdirSync('./interactions/autocomplete');
+
+// Loop through all files and store autocomplete interactions in autocompleteInteractions collection.
+
+for (const module of autocompleteInteractions) {
+	const files = fs
+		.readdirSync(`./interactions/autocomplete/${module}`)
+		.filter((file) => file.endsWith('.js'));
+
+	for (const interactionFile of files) {
+		const interaction = require(`./interactions/autocomplete/${module}/${interactionFile}`);
+		client.autocompleteInteractions.set(interaction.name, interaction);
+	}
+}
+
+/** ********************************************************************/
+// Registration of Context-Menu Interactions
+
+/**
+ * @type {String[]}
+ * @description All Context Menu commands.
+ */
+
+const contextMenus = fs.readdirSync('./interactions/context-menus');
+
+// Loop through all files and store context-menus in contextMenus collection.
+
+for (const folder of contextMenus) {
+	const files = fs
+		.readdirSync(`./interactions/context-menus/${folder}`)
+		.filter((file) => file.endsWith('.js'));
+	for (const file of files) {
+		const menu = require(`./interactions/context-menus/${folder}/${file}`);
+		const keyName = `${folder.toUpperCase()} ${menu.data.name}`;
+		client.contextCommands.set(keyName, menu);
+	}
+}
+
+/** ********************************************************************/
+// Registration of Button-Command Interactions.
+
+/**
+ * @type {String[]}
+ * @description All button commands.
+ */
+
+const buttonCommands = fs.readdirSync('./interactions/buttons');
+
+// Loop through all files and store button-commands in buttonCommands collection.
+
+for (const module of buttonCommands) {
+	const commandFiles = fs
+		.readdirSync(`./interactions/buttons/${module}`)
+		.filter((file) => file.endsWith('.js'));
+
+	for (const commandFile of commandFiles) {
+		const command = require(`./interactions/buttons/${module}/${commandFile}`);
+		client.buttonCommands.set(command.id, command);
+	}
+}
+
+/** ********************************************************************/
+// Registration of Modal-Command Interactions.
+
+/**
+ * @type {String[]}
+ * @description All modal commands.
+ */
+
+const modalCommands = fs.readdirSync('./interactions/modals');
+
+// Loop through all files and store modal-commands in modalCommands collection.
+
+for (const module of modalCommands) {
+	const commandFiles = fs
+		.readdirSync(`./interactions/modals/${module}`)
+		.filter((file) => file.endsWith('.js'));
+
+	for (const commandFile of commandFiles) {
+		const command = require(`./interactions/modals/${module}/${commandFile}`);
+		client.modalCommands.set(command.id, command);
+	}
+}
+
+/** ********************************************************************/
+// Registration of select-menus Interactions
+
+/**
+ * @type {String[]}
+ * @description All Select Menu commands.
+ */
+
+const selectMenus = fs.readdirSync('./interactions/select-menus');
+
+// Loop through all files and store select-menus in selectMenus collection.
+
+for (const module of selectMenus) {
+	const commandFiles = fs
+		.readdirSync(`./interactions/select-menus/${module}`)
+		.filter((file) => file.endsWith('.js'));
+	for (const commandFile of commandFiles) {
+		const command = require(`./interactions/select-menus/${module}/${commandFile}`);
+		client.selectCommands.set(command.id, command);
+	}
+}
+
+/** ********************************************************************/
+// Registration of Slash-Commands in Discord API
+
+const rest = new REST({ version: '9' }).setToken(token);
+
+const commandJsonData = [
+	...Array.from(client.slashCommands.values()).map((c) => c.data.toJSON()),
+	...Array.from(client.contextCommands.values()).map((c) => c.data),
+];
+
+(async () => {
 	try {
-		await command.execute(interaction);
+		console.log('[Strik3r] Started refreshing application (/) commands.');
+
+		await rest.put(
+			/**
+			 * By default, you will be using guild commands during development.
+			 * Once you are done and ready to use global commands (which have 1 hour cache time),
+			 * 1. Please uncomment the below (commented) line to deploy global commands.
+			 * 2. Please comment the below (uncommented) line (for guild commands).
+			 */
+
+			Routes.applicationGuildCommands(client_id, test_guild_id),
+
+			/**
+			 * Good advice for global commands, you need to execute them only once to update
+			 * your commands to the Discord API. Please comment it again after running the bot once
+			 * to ensure they don't get re-deployed on the next restart.
+			 */
+
+			// Routes.applicationCommands(client_id)
+
+			{ body: commandJsonData },
+		);
+
+		console.log('[Strik3r] Successfully reloaded application (/) commands.');
 	}
 	catch (error) {
 		console.error(error);
-		await interaction.reply({
-			content: 'There was an error while executing this command!',
-			ephemeral: true,
-		});
 	}
-});
+})();
 
-// Log in to Discord with your client's token
-client.login(STRIK3R_TOKEN);
+/** ********************************************************************/
+// Registration of Message Based Chat Triggers
+
+/**
+ * @type {String[]}
+ * @description All trigger categories aka folders.
+ */
+
+const triggerFolders = fs.readdirSync('./triggers');
+
+// Loop through all files and store triggers in triggers collection.
+
+for (const folder of triggerFolders) {
+	const triggerFiles = fs
+		.readdirSync(`./triggers/${folder}`)
+		.filter((file) => file.endsWith('.js'));
+	for (const file of triggerFiles) {
+		const trigger = require(`./triggers/${folder}/${file}`);
+		client.triggers.set(trigger.name, trigger);
+	}
+}
+
+// Login into your client application with bot's token.
+
+client.login(token);
