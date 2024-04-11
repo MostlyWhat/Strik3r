@@ -1,6 +1,6 @@
 /**
  * @file Context Interaction Handler
- * @author Krish Garg & MostlyWhat
+ * @author MostlyWhat
  * @since 3.0.0
  * @version 3.3.2
  */

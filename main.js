@@ -100,6 +100,8 @@ client.triggers = new Collection();
 
 const commandFolders = fs.readdirSync("./commands");
 
+let commandsDetected = 0;
+
 // Loop through all files and store commands in commands collection.
 
 for (const folder of commandFolders) {
@@ -109,6 +111,7 @@ for (const folder of commandFolders) {
 	for (const file of commandFiles) {
 		const command = require(`./commands/${folder}/${file}`);
 		client.commands.set(command.name, command);
+		commandsDetected++;
 	}
 }
 
@@ -122,6 +125,8 @@ for (const folder of commandFolders) {
 
 const slashCommands = fs.readdirSync("./interactions/slash");
 
+let slashCommandsDetected = 0;
+
 // Loop through all files and store slash-commands in slashCommands collection.
 
 for (const module of slashCommands) {
@@ -132,6 +137,7 @@ for (const module of slashCommands) {
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/slash/${module}/${commandFile}`);
 		client.slashCommands.set(command.data.name, command);
+		slashCommandsDetected++;
 	}
 }
 
@@ -145,6 +151,8 @@ for (const module of slashCommands) {
 
 const autocompleteInteractions = fs.readdirSync("./interactions/autocomplete");
 
+let autocompleteCommandsDetected = 0;
+
 // Loop through all files and store autocomplete interactions in autocompleteInteractions collection.
 
 for (const module of autocompleteInteractions) {
@@ -155,6 +163,7 @@ for (const module of autocompleteInteractions) {
 	for (const interactionFile of files) {
 		const interaction = require(`./interactions/autocomplete/${module}/${interactionFile}`);
 		client.autocompleteInteractions.set(interaction.name, interaction);
+		autocompleteCommandsDetected++;
 	}
 }
 
@@ -168,6 +177,8 @@ for (const module of autocompleteInteractions) {
 
 const contextMenus = fs.readdirSync("./interactions/context-menus");
 
+let contextMenusDetected = 0;
+
 // Loop through all files and store context-menus in contextMenus collection.
 
 for (const folder of contextMenus) {
@@ -178,6 +189,7 @@ for (const folder of contextMenus) {
 		const menu = require(`./interactions/context-menus/${folder}/${file}`);
 		const keyName = `${folder.toUpperCase()} ${menu.data.name}`;
 		client.contextCommands.set(keyName, menu);
+		contextMenusDetected++;
 	}
 }
 
@@ -191,6 +203,8 @@ for (const folder of contextMenus) {
 
 const buttonCommands = fs.readdirSync("./interactions/buttons");
 
+let buttonCommandsDetected = 0;
+
 // Loop through all files and store button-commands in buttonCommands collection.
 
 for (const module of buttonCommands) {
@@ -201,6 +215,7 @@ for (const module of buttonCommands) {
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/buttons/${module}/${commandFile}`);
 		client.buttonCommands.set(command.id, command);
+		buttonCommandsDetected++;
 	}
 }
 
@@ -214,6 +229,8 @@ for (const module of buttonCommands) {
 
 const modalCommands = fs.readdirSync("./interactions/modals");
 
+let modalCommandsDetected = 0;
+
 // Loop through all files and store modal-commands in modalCommands collection.
 
 for (const module of modalCommands) {
@@ -224,6 +241,7 @@ for (const module of modalCommands) {
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/modals/${module}/${commandFile}`);
 		client.modalCommands.set(command.id, command);
+		modalCommandsDetected++;
 	}
 }
 
@@ -237,6 +255,8 @@ for (const module of modalCommands) {
 
 const selectMenus = fs.readdirSync("./interactions/select-menus");
 
+let selectMenusDetected = 0;
+
 // Loop through all files and store select-menus in selectMenus collection.
 
 for (const module of selectMenus) {
@@ -246,6 +266,7 @@ for (const module of selectMenus) {
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/select-menus/${module}/${commandFile}`);
 		client.selectCommands.set(command.id, command);
+		selectMenusDetected++;
 	}
 }
 
@@ -261,7 +282,7 @@ const commandJsonData = [
 
 (async () => {
 	try {
-		console.log("[Strik3r] Started refreshing application (/) commands.");
+		console.log("[Strik3r] Started refreshing all application (/) commands.");
 
 		await rest.put(
 			/**
@@ -284,7 +305,15 @@ const commandJsonData = [
 			{ body: commandJsonData }
 		);
 
-		console.log("[Strik3r] Successfully reloaded application (/) commands.");
+		console.log("[Strik3r] Detected " + commandsDetected + " prefix commands.");
+		console.log("[Strik3r] Detected " + slashCommandsDetected + " slash commands.");
+		console.log("[Strik3r] Detected " + autocompleteCommandsDetected + " autocomplete commands.");
+		console.log("[Strik3r] Detected " + contextMenusDetected + " context menu commands.");
+		console.log("[Strik3r] Detected " + buttonCommandsDetected + " button commands.");
+		console.log("[Strik3r] Detected " + selectMenusDetected + " select menu commands.");
+		console.log("[Strik3r] Detected " + modalCommandsDetected + " modal commands.");
+
+		console.log("[Strik3r] Successfully reloaded all application (/) commands.");
 	} catch (error) {
 		console.error(error);
 	}

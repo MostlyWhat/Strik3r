@@ -5,7 +5,7 @@
  * @version 3.2.2
  */
 
-const { Events } = require("discord.js");
+const { Events, ActivityType } = require("discord.js");
 
 module.exports = {
 	name: Events.ClientReady,
@@ -17,21 +17,14 @@ module.exports = {
 	 */
 	execute(client) {
 		console.log(`[Strik3r] Logged in as ${client.user.tag}`);
-		// eslint-disable-next-line prefer-const
-		let activities = ['Minecraft', 'Halo Infinite', 'Astroneer', 'Among Us'],
-			i = 0;
-		setInterval(
-			() =>
-				client.user.setPresence({
-					activities: [
-						{
-							name: `${activities[i++ % activities.length]}`,
-							type: ActivityType.Playing,
-						},
-					],
-					status: 'online',
-				}),
-			600000,
-		);
+		client.user.setPresence({
+			activities: [
+				{
+					name: 'Destiny 2',
+					type: ActivityType.Competing,
+				},
+			],
+			status: 'online',
+		});
 	},
 };
