@@ -27,7 +27,7 @@
 	},
 	"devDependencies": {
 		"@auto-it/git-tag": "^10.37.6",
-		"auto": "^10.37.6",
+		"auto": "^11.1.6",
 		"eslint": "^8.31.0",
 		"prettier": "^2.8.1"
 	}
