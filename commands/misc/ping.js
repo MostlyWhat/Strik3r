@@ -9,11 +9,13 @@
  * @type {import('../../typings').LegacyCommand}
  */
 module.exports = {
-	name: 'ping',
+	name: "ping",
 	// Refer to typings.d.ts for available properties.
 
 	// eslint-disable-next-line no-unused-vars
 	execute(message, args) {
-		message.channel.send({ content: 'Pong.' });
+		message.channel.send({
+			content: `Pong! with a latency of ${interaction.client.ws.ping}ms`,
+		});
 	},
 };

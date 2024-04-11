@@ -1,12 +1,14 @@
 /**
  * @file Context Interaction Handler
- * @author Krish Garg & Naman Vrati
+ * @author Krish Garg & MostlyWhat
  * @since 3.0.0
- * @version 3.3.0
+ * @version 3.3.2
  */
 
+const { Events } = require("discord.js");
+
 module.exports = {
-	name: 'interactionCreate',
+	name: Events.InteractionCreate,
 
 	/**
 	 * @description Executes when an interaction is created and handle it.
@@ -22,49 +24,43 @@ module.exports = {
 
 		if (!interaction.isContextMenuCommand()) return;
 
-		/** ********************************************************************/
+		/**********************************************************************/
 
 		// Checks if the interaction target was a user
 
 		if (interaction.isUserContextMenuCommand()) {
 			const command = client.contextCommands.get(
-				'USER ' + interaction.commandName,
+				"USER " + interaction.commandName
 			);
 
 			// A try to execute the interaction.
 
 			try {
-				await command.execute(interaction);
-				return;
-			}
-			catch (err) {
+				return await command.execute(interaction);
+			} catch (err) {
 				console.error(err);
 				await interaction.reply({
-					content: 'There was an issue while executing that context command!',
+					content: "There was an issue while executing that context command!",
 					ephemeral: true,
 				});
-				return;
 			}
 		}
-		// Checks if the interaction target was a user
+		// Checks if the interaction target was a message
 		else if (interaction.isMessageContextMenuCommand()) {
 			const command = client.contextCommands.get(
-				'MESSAGE ' + interaction.commandName,
+				"MESSAGE " + interaction.commandName
 			);
 
 			// A try to execute the interaction.
 
 			try {
-				await command.execute(interaction);
-				return;
-			}
-			catch (err) {
+				return await command.execute(interaction);
+			} catch (err) {
 				console.error(err);
 				await interaction.reply({
-					content: 'There was an issue while executing that context command!',
+					content: "There was an issue while executing that context command!",
 					ephemeral: true,
 				});
-				return;
 			}
 		}
 
@@ -72,7 +68,7 @@ module.exports = {
 		// Possible Fix is a restart!
 		else {
 			return console.log(
-				'Something weird happening in context menu. Received a context menu of unknown type.',
+				"Something weird happening in context menu. Received a context menu of unknown type."
 			);
 		}
 	},

@@ -2,24 +2,24 @@
  * @file Message Based Commands Handler
  * @author MostlyWhat
  * @since 1.0.0
- * @version 3.3.0
+ * @version 3.3.2
  */
 
 // Declares constants (destructured) to be used in this file.
 
-const { Collection, ChannelType } = require('discord.js');
-const { PREFIX, OWNER_ID } = require('../config.js');
+const { Collection, ChannelType, Events } = require("discord.js");
+const { PREFIX, OWNER_ID } = require("../config.js");
 const prefix = PREFIX;
 const owner = OWNER_ID;
 
 // Prefix regex, we will use to match in mention prefix.
 
 const escapeRegex = (string) => {
-	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };
 
 module.exports = {
-	name: 'messageCreate',
+	name: Events.MessageCreate,
 
 	/**
 	 * @description Executes when a message is created and handle it.
@@ -39,7 +39,7 @@ module.exports = {
 			message.content == `<@${client.user.id}>` ||
 			message.content == `<@!${client.user.id}>`
 		) {
-			require('../messages/onMention').execute(message);
+			require("../messages/onMention").execute(message);
 			return;
 		}
 
@@ -55,7 +55,7 @@ module.exports = {
 		 */
 
 		const prefixRegex = new RegExp(
-			`^(<@!?${client.user.id}>|${escapeRegex(checkPrefix)})\\s*`,
+			`^(<@!?${client.user.id}>|${escapeRegex(checkPrefix)})\\s*`
 		);
 
 		// Checks if message content in lower case starts with bot's mention.
@@ -84,14 +84,13 @@ module.exports = {
 
 		// Check if mesage does not starts with prefix, or message author is bot. If yes, return.
 
-		if (!message.content.startsWith(matchedPrefix) || message.author.bot) {
+		if (!message.content.startsWith(matchedPrefix) || message.author.bot)
 			return;
-		}
 
 		const command =
 			client.commands.get(commandName) ||
 			client.commands.find(
-				(cmd) => cmd.aliases && cmd.aliases.includes(commandName),
+				(cmd) => cmd.aliases && cmd.aliases.includes(commandName)
 			);
 
 		// It it's not a command, return :)
@@ -101,14 +100,14 @@ module.exports = {
 		// Owner Only Property, add in your command properties if true.
 
 		if (command.ownerOnly && message.author.id !== owner) {
-			return message.reply({ content: 'This is a owner only command!' });
+			return message.reply({ content: "This is a owner only command!" });
 		}
 
 		// Guild Only Property, add in your command properties if true.
 
 		if (command.guildOnly && message.channel.type === ChannelType.DM) {
 			return message.reply({
-				content: 'I can\'t execute that command inside DMs!',
+				content: "I can't execute that command inside DMs!",
 			});
 		}
 
@@ -118,7 +117,7 @@ module.exports = {
 		if (command.permissions && message.channel.type !== ChannelType.DM) {
 			const authorPerms = message.channel.permissionsFor(message.author);
 			if (!authorPerms || !authorPerms.has(command.permissions)) {
-				return message.reply({ content: 'You can not do this!' });
+				return message.reply({ content: "You can not do this!" });
 			}
 		}
 
@@ -153,7 +152,7 @@ module.exports = {
 				const timeLeft = (expirationTime - now) / 1000;
 				return message.reply({
 					content: `please wait ${timeLeft.toFixed(
-						1,
+						1
 					)} more second(s) before reusing the \`${command.name}\` command.`,
 				});
 			}
@@ -167,11 +166,10 @@ module.exports = {
 		// execute the final command. Put everything above this.
 		try {
 			command.execute(message, args);
-		}
-		catch (error) {
+		} catch (error) {
 			console.error(error);
 			message.reply({
-				content: 'There was an error trying to execute that command!',
+				content: "There was an error trying to execute that command!",
 			});
 		}
 	},

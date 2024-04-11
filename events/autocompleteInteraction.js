@@ -2,10 +2,13 @@
  * @file Autocomplete Interaction Handler
  * @author MostlyWhat
  * @since 3.3.0
- * @version 3.3.1
+ * @version 3.3.2
  */
+
+const { Events } = require("discord.js");
+
 module.exports = {
-	name: 'interactionCreate',
+	name: Events.InteractionCreate,
 
 	/**
 	 * @description Executes when an interaction is created and handle it.
@@ -19,27 +22,29 @@ module.exports = {
 
 		// Checks if the interaction is an autocomplete interaction (to prevent weird bugs)
 
-		if (!interaction.isAutocomplete()) return;
+		if (!interaction.isAutocomplete()) {
+			return;
+		}
 
 		// Checks if the request is available in our code.
 
 		const request = client.autocompleteInteractions.get(
-			interaction.commandName,
+			interaction.commandName
 		);
 
 		// If the interaction is not a request in cache return.
 
-		if (!request) return;
+		if (!request) {
+			return;
+		}
 
 		// A try to execute the interaction.
 
 		try {
 			await request.execute(interaction);
-		}
-		catch (err) {
+		} catch (err) {
 			console.error(err);
+			return Promise.reject(err);
 		}
-
-		return;
 	},
 };

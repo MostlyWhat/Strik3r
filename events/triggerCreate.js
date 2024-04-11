@@ -2,11 +2,13 @@
  * @file Main trigger handler file.
  * @author MostlyWhat
  * @since 2.0.0
- * @version 3.3.0
+ * @version 3.3.2
  */
 
+const { Events } = require("discord.js");
+
 module.exports = {
-	name: 'messageCreate',
+	name: Events.MessageCreate,
 
 	/**
 	 * @description Executes when a message is created and handle it.
@@ -45,14 +47,13 @@ module.exports = {
 				if (message.content.includes(name)) {
 					try {
 						trigger.execute(message, args);
-					}
-					catch (error) {
+					} catch (error) {
 						// If triggereds fail, reply back!
 
 						console.error(error);
 
 						message.reply({
-							content: 'there was an error trying to execute that trigger!',
+							content: "there was an error trying to execute that trigger!",
 						});
 					}
 

@@ -7,18 +7,18 @@
 
 // Declare constants which will be used throughout the bot.
 
-const fs = require('fs');
+const fs = require("fs");
 const {
 	Client,
 	Collection,
 	GatewayIntentBits,
 	Partials,
-} = require('discord.js');
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+	REST,
+	Routes,
+} = require("discord.js");
 
 // Import Variables from config.js
-const { STRIK3R_TOKEN, STRIK3R_ID, SERVER_ID } = require('./config.js');
+const { STRIK3R_TOKEN, STRIK3R_ID, SERVER_ID } = require("./config.js");
 const token = STRIK3R_TOKEN;
 const client_id = STRIK3R_ID;
 const test_guild_id = SERVER_ID;
@@ -27,17 +27,17 @@ const test_guild_id = SERVER_ID;
  * @description Launch Web Server to keep the bot alive
  */
 
-const http = require('http');
+const http = require("http");
 http
-	.createServer(function(req, res) {
-		res.writeHead(200, { 'content-type': 'text/html' });
-		fs.createReadStream('interface/index.html').pipe(res);
+	.createServer(function (req, res) {
+		res.writeHead(200, { "content-type": "text/html" });
+		fs.createReadStream("interface/index.html").pipe(res);
 	})
 	.listen(8080);
 
 /**
  * From v13, specifying the intents is compulsory.
- * @type {import('./typings').Client}
+ * @type {import('./typings.js').Client}
  * @description Main Application Client */
 
 // @ts-ignore
@@ -61,19 +61,18 @@ const client = new Client({
  */
 
 const eventFiles = fs
-	.readdirSync('./events')
-	.filter((file) => file.endsWith('.js'));
+	.readdirSync("./events")
+	.filter((file) => file.endsWith(".js"));
 
 // Loop through all files and execute the event when it is actually emmited.
 for (const file of eventFiles) {
 	const event = require(`./events/${file}`);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args, client));
-	}
-	else {
+	} else {
 		client.on(
 			event.name,
-			async (...args) => await event.execute(...args, client),
+			async (...args) => await event.execute(...args, client)
 		);
 	}
 }
@@ -99,14 +98,14 @@ client.triggers = new Collection();
  * @description All command categories aka folders.
  */
 
-const commandFolders = fs.readdirSync('./commands');
+const commandFolders = fs.readdirSync("./commands");
 
 // Loop through all files and store commands in commands collection.
 
 for (const folder of commandFolders) {
 	const commandFiles = fs
 		.readdirSync(`./commands/${folder}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 	for (const file of commandFiles) {
 		const command = require(`./commands/${folder}/${file}`);
 		client.commands.set(command.name, command);
@@ -121,14 +120,14 @@ for (const folder of commandFolders) {
  * @description All slash commands.
  */
 
-const slashCommands = fs.readdirSync('./interactions/slash');
+const slashCommands = fs.readdirSync("./interactions/slash");
 
 // Loop through all files and store slash-commands in slashCommands collection.
 
 for (const module of slashCommands) {
 	const commandFiles = fs
 		.readdirSync(`./interactions/slash/${module}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/slash/${module}/${commandFile}`);
@@ -144,14 +143,14 @@ for (const module of slashCommands) {
  * @description All autocomplete interactions.
  */
 
-const autocompleteInteractions = fs.readdirSync('./interactions/autocomplete');
+const autocompleteInteractions = fs.readdirSync("./interactions/autocomplete");
 
 // Loop through all files and store autocomplete interactions in autocompleteInteractions collection.
 
 for (const module of autocompleteInteractions) {
 	const files = fs
 		.readdirSync(`./interactions/autocomplete/${module}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 
 	for (const interactionFile of files) {
 		const interaction = require(`./interactions/autocomplete/${module}/${interactionFile}`);
@@ -167,14 +166,14 @@ for (const module of autocompleteInteractions) {
  * @description All Context Menu commands.
  */
 
-const contextMenus = fs.readdirSync('./interactions/context-menus');
+const contextMenus = fs.readdirSync("./interactions/context-menus");
 
 // Loop through all files and store context-menus in contextMenus collection.
 
 for (const folder of contextMenus) {
 	const files = fs
 		.readdirSync(`./interactions/context-menus/${folder}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 	for (const file of files) {
 		const menu = require(`./interactions/context-menus/${folder}/${file}`);
 		const keyName = `${folder.toUpperCase()} ${menu.data.name}`;
@@ -190,14 +189,14 @@ for (const folder of contextMenus) {
  * @description All button commands.
  */
 
-const buttonCommands = fs.readdirSync('./interactions/buttons');
+const buttonCommands = fs.readdirSync("./interactions/buttons");
 
 // Loop through all files and store button-commands in buttonCommands collection.
 
 for (const module of buttonCommands) {
 	const commandFiles = fs
 		.readdirSync(`./interactions/buttons/${module}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/buttons/${module}/${commandFile}`);
@@ -213,14 +212,14 @@ for (const module of buttonCommands) {
  * @description All modal commands.
  */
 
-const modalCommands = fs.readdirSync('./interactions/modals');
+const modalCommands = fs.readdirSync("./interactions/modals");
 
 // Loop through all files and store modal-commands in modalCommands collection.
 
 for (const module of modalCommands) {
 	const commandFiles = fs
 		.readdirSync(`./interactions/modals/${module}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/modals/${module}/${commandFile}`);
@@ -236,14 +235,14 @@ for (const module of modalCommands) {
  * @description All Select Menu commands.
  */
 
-const selectMenus = fs.readdirSync('./interactions/select-menus');
+const selectMenus = fs.readdirSync("./interactions/select-menus");
 
 // Loop through all files and store select-menus in selectMenus collection.
 
 for (const module of selectMenus) {
 	const commandFiles = fs
 		.readdirSync(`./interactions/select-menus/${module}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 	for (const commandFile of commandFiles) {
 		const command = require(`./interactions/select-menus/${module}/${commandFile}`);
 		client.selectCommands.set(command.id, command);
@@ -253,7 +252,7 @@ for (const module of selectMenus) {
 /** ********************************************************************/
 // Registration of Slash-Commands in Discord API
 
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new REST({ version: "9" }).setToken(token);
 
 const commandJsonData = [
 	...Array.from(client.slashCommands.values()).map((c) => c.data.toJSON()),
@@ -262,7 +261,7 @@ const commandJsonData = [
 
 (async () => {
 	try {
-		console.log('[Strik3r] Started refreshing application (/) commands.');
+		console.log("[Strik3r] Started refreshing application (/) commands.");
 
 		await rest.put(
 			/**
@@ -282,12 +281,11 @@ const commandJsonData = [
 
 			// Routes.applicationCommands(client_id)
 
-			{ body: commandJsonData },
+			{ body: commandJsonData }
 		);
 
-		console.log('[Strik3r] Successfully reloaded application (/) commands.');
-	}
-	catch (error) {
+		console.log("[Strik3r] Successfully reloaded application (/) commands.");
+	} catch (error) {
 		console.error(error);
 	}
 })();
@@ -300,14 +298,14 @@ const commandJsonData = [
  * @description All trigger categories aka folders.
  */
 
-const triggerFolders = fs.readdirSync('./triggers');
+const triggerFolders = fs.readdirSync("./triggers");
 
 // Loop through all files and store triggers in triggers collection.
 
 for (const folder of triggerFolders) {
 	const triggerFiles = fs
 		.readdirSync(`./triggers/${folder}`)
-		.filter((file) => file.endsWith('.js'));
+		.filter((file) => file.endsWith(".js"));
 	for (const file of triggerFiles) {
 		const trigger = require(`./triggers/${folder}/${file}`);
 		client.triggers.set(trigger.name, trigger);

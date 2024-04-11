@@ -2,11 +2,13 @@
  * @file Slash Command Interaction Handler
  * @author MostlyWhat
  * @since 3.0.0
- * @version 3.3.0
+ * @version 3.3.2
  */
 
+const { Events } = require("discord.js");
+
 module.exports = {
-	name: 'interactionCreate',
+	name: Events.InteractionCreate,
 
 	/**
 	 * @description Executes when an interaction is created and handle it.
@@ -32,11 +34,10 @@ module.exports = {
 
 		try {
 			await command.execute(interaction);
-		}
-		catch (err) {
+		} catch (err) {
 			console.error(err);
 			await interaction.reply({
-				content: 'There was an issue while executing that command!',
+				content: "There was an issue while executing that command!",
 				ephemeral: true,
 			});
 		}
