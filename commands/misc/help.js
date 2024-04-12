@@ -35,7 +35,7 @@ module.exports = {
 
 			const helpEmbed = new EmbedBuilder()
 				.setColor('Random')
-				.setTitle('List of all my commands')
+				.setTitle('List of all commands')
 				.setDescription(
 					'`' + commands.map((command) => command.name).join('`, `') + '`',
 				)
