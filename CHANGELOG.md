@@ -1,3 +1,15 @@
+# v0.1.2 (Fri Apr 12 2024)
+
+#### ⚠️ Pushed to `main`
+
+- Fix to Deployment ([@MostlyWhat](https://github.com/MostlyWhat))
+
+#### Authors: 1
+
+- MostlyWhat ([@MostlyWhat](https://github.com/MostlyWhat))
+
+---
+
 # v0.1.1 (Fri Apr 12 2024)
 
 #### ⚠️ Pushed to `main`
