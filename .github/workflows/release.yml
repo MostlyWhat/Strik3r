@@ -1,6 +1,6 @@
-name: Release
+name: Publish Release
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   release:
@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 19.x
+
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1
 
       - name: Cache node modules
         uses: actions/cache@v1
