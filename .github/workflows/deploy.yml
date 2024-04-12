@@ -17,6 +17,7 @@ jobs:
           key: ${{secrets.KEY}}
           script: |
             pm2 stop main
+            cd strik3r
             git pull origin main
             pm2 start main.js
             echo 'Deployment Successful'
