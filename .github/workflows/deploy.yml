@@ -17,9 +17,6 @@ jobs:
           key: ${{secrets.KEY}}
           script: |
             pm2 stop main
-            sudo rm -r -f /strik3r
-            git clone git@github.com:mostlywhat/strik3r
-            cat strik3r_settings >> /strik3r/.env
-            cd strik3r
+            git pull origin main
             pm2 start main.js
             echo 'Deployment Successful'
